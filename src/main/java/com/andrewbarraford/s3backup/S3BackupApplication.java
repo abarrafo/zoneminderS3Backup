@@ -1,12 +1,11 @@
 package com.andrewbarraford.s3backup;
 
-import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import org.apache.hadoop.fs.s3a.BasicAWSCredentialsProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,11 +35,12 @@ public class S3BackupApplication {
 
 	@Bean(name = "transferManager")
 	public TransferManager transferManagerInit(
-			@Value("${cloud.aws.credentials.accessKey}") final String key,
-			@Value("${cloud.aws.credentials.secretKey}") final String secret
+			@Value("${cloud.aws.credentials.accessKey:invalid}") final String key,
+			@Value("${cloud.aws.credentials.secretKey:invalid}") final String secret
 	){
 		return TransferManagerBuilder.standard().withS3Client(
 				AmazonS3ClientBuilder.standard()
+						.withRegion(Regions.US_EAST_1)
 						.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(key, secret)))
 						.build())
 				.build();

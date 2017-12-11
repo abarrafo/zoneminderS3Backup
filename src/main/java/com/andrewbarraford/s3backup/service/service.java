@@ -64,11 +64,11 @@ public class service {
 
     @Autowired
     public service(final EventRepository eventRepository,
-                   @Value("${cloud.aws.s3.bucket}") final String bucketName,
-                   @Value("${events.path}") final String basePath,
-                   @Value("${zm.url}") final String zmUrl,
-                   @Value("${zm.username}") final String username,
-                   @Value("${zm.password}") final String password,
+                   @Value("${cloud.aws.s3.bucket:invalid}") final String bucketName,
+                   @Value("${events.path:invalid}") final String basePath,
+                   @Value("${zm.url:invalid}") final String zmUrl,
+                   @Value("${zm.username:invalid}") final String username,
+                   @Value("${zm.password:invalid}") final String password,
                    final QueueFactory queueFactory,
                    final RestTemplate restTemplate) {
         this.eventRepository = eventRepository;
@@ -99,7 +99,14 @@ public class service {
                     SLASH
                     + padNumber(date.getMonthValue()) + SLASH + padNumber(date.getDayOfMonth()) + SLASH + padNumber(date
                     .getHour()) +
-                    DASH + padNumber(date.getMinute()) + DASH+ padNumber(date.getSecond());
+                    SLASH + padNumber(date.getMinute()) + SLASH + padNumber(date.getSecond());
+
+            final String s3Key = event.getMonitorId() + SLASH + String.valueOf(date.getYear()).substring
+                    (2) +
+                    SLASH
+                    + padNumber(date.getMonthValue()) + SLASH + padNumber(date.getDayOfMonth()) + SLASH + padNumber(date
+                    .getHour()) +
+                    DASH + padNumber(date.getMinute()) + DASH + padNumber(date.getSecond());
 
             final String randomKey =  "package-" + RandomStringGenerator.randomStringForUseInBucketNames(5) + ".zip";
             final String path = eventsPath + key;
