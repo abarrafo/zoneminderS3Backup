@@ -1,4 +1,4 @@
-#Backup ZoneMinder recordings to Amazon 23.
+# Backup ZoneMinder recordings to Amazon 23.
 
 This spring boot application was created to provide a backup service to S3, of ZoneMinder recordings. It has been 
 built to run with a single instance, ZoneMinder setup, connecting and modifying the DB used by ZoneMinder. 
@@ -25,14 +25,14 @@ processing Queue.
 I hacked this together on my day off, but feel free to use this in any way you like. Open an Issue if you find a bug.
  Feel free to create a PR if you want to contribute.
 
-###Required Dependencies
+### Required Dependencies
 
 * Running-single node ZoneMinder setup. (I run ZM on a Centos7 machine)
 * ZoneMinder DB credentials. 
 * Redis DB installed on the instance.
 * S3 Bucket with IAM credentials.
 
-###Required JVM Params to Run
+### Required JVM Params to Run
 
 * `-Dzm.username=backup`
 * `-Dzm.password=PASSWORD`
