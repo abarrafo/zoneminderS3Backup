@@ -1,4 +1,4 @@
-# Backup ZoneMinder recordings to Amazon 23.
+# Backup ZoneMinder recordings to Amazon S3.
 
 This spring boot application was created to provide a backup service to S3, of ZoneMinder recordings. It has been 
 built to run with a single instance, ZoneMinder setup, connecting and modifying the DB used by ZoneMinder. 
