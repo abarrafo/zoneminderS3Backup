@@ -121,7 +121,7 @@ public class service {
             final QueueMessage message = new QueueMessage();
             message.setBucketName(bucketName);
             message.setId(event.getId());
-            message.setKey("events/" + key + DASH + randomKey);
+            message.setKey("events/" + s3Key + DASH + randomKey);
             message.setPath(tempPath);
 
             queueFactory.pushToMessageQueue(message);
