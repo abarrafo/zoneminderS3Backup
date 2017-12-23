@@ -17,6 +17,7 @@ public class QueueMessage implements Serializable{
     private String path;
     private String bucketName;
     private String key;
+    private Integer attempts = 1;
 
     @Setter(AccessLevel.NONE)
     private String createDate = LocalDateTime.now().toString();

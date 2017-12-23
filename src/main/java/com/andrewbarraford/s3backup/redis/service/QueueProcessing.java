@@ -1,6 +1,7 @@
 package com.andrewbarraford.s3backup.redis.service;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.andrewbarraford.s3backup.domain.Event;
@@ -55,7 +56,14 @@ public class QueueProcessing {
                 else if(LocalDateTime.now().isAfter(LocalDateTime.parse(queueMessage.getCreateDate()).plusHours(1))) {
                     log.warn("Upload never completed in provided time. Put back on to the message queue to restart " +
                             "upload process for: [{}].", queueMessage.getId());
-                    queueFactory.pushToMessageQueue(queueMessage);
+                    queueMessage.setAttempts(queueMessage.getAttempts() == null ? 1 : queueMessage.getAttempts() + 1);
+                    if(queueMessage.getAttempts() <= 15) {
+                        queueFactory.pushToMessageQueue(queueMessage);
+                    }else{
+                        log.warn("Upload attempted 15 times .. Dropping the vent from upload: [{}]", queueMessage);
+                        event.get().setBackUpComplete(true);
+                        eventRepository.save(event.get());
+                    }
                 }else{
                     log.info("Upload may still be processing for: [{}]", queueMessage.getId());
                     queueFactory.pushToProcessingQueue(queueMessage);
