@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.zeroturnaround.zip.ZipException;
 import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
@@ -114,20 +115,35 @@ public class service {
 
             log.info("Path to event: [{}], Path to temp: [{}]", path, tempPath);
 
+            boolean errorOccurred = false;
+
             //Zip event
-            ZipUtil.pack(new File(path),
-                    new File(tempPath));
+            try {
+                ZipUtil.pack(new File(path), new File(tempPath));
+            }
+            catch (ZipException e){
+                log.error("Error occurred - possible IO error, corrupted files or bad hardware. Log and move on," +
+                                " e.message: [{}], e.cause: [{}], e.stack: [{}], e.class: [{}]",
+                        e.getMessage(), e.getCause(), e.getStackTrace(), e.getClass());
+                event.setBackedUp(true);
+                event.setBackUpComplete(true);
+                eventRepository.save(event);
 
-            final QueueMessage message = new QueueMessage();
-            message.setBucketName(bucketName);
-            message.setId(event.getId());
-            message.setKey("events/" + s3Key + DASH + randomKey);
-            message.setPath(tempPath);
+                errorOccurred = true;
+            }
 
-            queueFactory.pushToMessageQueue(message);
+            if(!errorOccurred){
+                final QueueMessage message = new QueueMessage();
+                message.setBucketName(bucketName);
+                message.setId(event.getId());
+                message.setKey("events/" + s3Key + DASH + randomKey);
+                message.setPath(tempPath);
 
-            event.setBackedUp(true);
-            eventRepository.save(event);
+                queueFactory.pushToMessageQueue(message);
+
+                event.setBackedUp(true);
+                eventRepository.save(event);
+            }
 
         });
     }
