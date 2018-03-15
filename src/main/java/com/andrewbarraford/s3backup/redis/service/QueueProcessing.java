@@ -1,7 +1,6 @@
 package com.andrewbarraford.s3backup.redis.service;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.andrewbarraford.s3backup.domain.Event;
