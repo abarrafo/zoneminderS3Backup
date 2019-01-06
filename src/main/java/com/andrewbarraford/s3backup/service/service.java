@@ -39,10 +39,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @SuppressWarnings("unused")
 @Component
@@ -94,13 +92,9 @@ public class service {
             final ZoneId defaultZoneId = ZoneId.systemDefault();
             final Instant instant = event.getStartTime().toInstant();
             final LocalDateTime date = instant.atZone(defaultZoneId).toLocalDateTime();
+            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-            final String key = + event.getMonitorId() + SLASH + String.valueOf(date.getYear()).substring
-                    (2) +
-                    SLASH
-                    + padNumber(date.getMonthValue()) + SLASH + padNumber(date.getDayOfMonth()) + SLASH + padNumber(date
-                    .getHour()) +
-                    SLASH + padNumber(date.getMinute()) + SLASH + padNumber(date.getSecond());
+            final String key = + event.getMonitorId() + SLASH + date.format(formatter) + SLASH + event.getId();
 
             final String s3Key = event.getMonitorId() + SLASH + String.valueOf(date.getYear()).substring
                     (2) +
@@ -184,7 +178,6 @@ public class service {
         });
     }
 
-    @SuppressWarnings("WeakerAccess")
     @Cacheable(cacheNames = "authCache")
     public List<Cookie> authenticateWithApi() throws URISyntaxException {
         final HttpHeaders headers = new HttpHeaders();
@@ -202,7 +195,7 @@ public class service {
                 restTemplate.postForEntity( zmUrl + "index.php", request , String.class);
 
         log.info("Response Headers: [{}]", response.getHeaders().get("Set-Cookie"));
-        return parseCookies(new URI(zmUrl), response.getHeaders().get("Set-Cookie"));
+        return parseCookies(new URI(zmUrl), Objects.requireNonNull(response.getHeaders().get("Set-Cookie")));
 
     }
 

@@ -33,7 +33,6 @@ public class QueueProcessing {
         this.eventRepository = eventRepository;
     }
 
-    /** short poll the queue */
     @Scheduled(fixedDelay = 1000)
     public void processMessageQueue(){
         final QueueMessage message =  queueFactory.popFromMessageQueueOntoProcessing();
@@ -56,7 +55,7 @@ public class QueueProcessing {
                     log.warn("Upload never completed in provided time. Put back on to the message queue to restart " +
                             "upload process for: [{}].", queueMessage.getId());
                     queueMessage.setAttempts(queueMessage.getAttempts() == null ? 1 : queueMessage.getAttempts() + 1);
-                    if(queueMessage.getAttempts() <= 15) {
+                    if(queueMessage.getAttempts() <= 5) {
                         queueFactory.pushToMessageQueue(queueMessage);
                     }else{
                         log.warn("Upload attempted 15 times .. Dropping the vent from upload: [{}]", queueMessage);
@@ -71,7 +70,6 @@ public class QueueProcessing {
         }
     }
 
-    /** process text analytics, persist message in db and push into webSocket */
     private void pushToCloud(final QueueMessage queueMessage){
         //Push to S3
         final File zip = new File(queueMessage.getPath());

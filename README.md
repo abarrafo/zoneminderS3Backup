@@ -3,6 +3,8 @@
 This spring boot application was created to provide a backup service to S3, of ZoneMinder recordings. It has been 
 built to run with a single instance, ZoneMinder setup, connecting and modifying the DB used by ZoneMinder. 
 
+`Compatible with ZM V 1.32.`
+
 This app works by pulling events from the ZoneMinder Events table, creating 2 new fields in that table, backedUp and 
 backUpCompleted the first keeps track of events put into the backup process, while the latter tracks when the 
 specific event has been fully uploaded to S3. 
@@ -56,4 +58,6 @@ I hacked this together on my day off, but feel free to use this in any way you l
     -Dcloud.aws.s3.bucket=BUCKET_NAME \
     -Dspring.datasource.username=ZM_USERNAME \
     -Dspring.datasource.password=ZM_PASSWORD \
+    -Dserver.port=8081 \
+    -Devents.path=/home/zoneminder/ \
     -jar s3-backup-0.0.1-SNAPSHOT.jar > /dev/null 2>&1&`
