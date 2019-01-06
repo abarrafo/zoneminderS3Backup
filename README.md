@@ -34,6 +34,7 @@ I hacked this together on my day off, but feel free to use this in any way you l
 * Redis DB installed on the instance and ready for connections.
 * S3 Bucket with IAM credentials.
 * Java 8 installed.
+* create a temp directory in your base path.
 
 ### Required JVM Params to Run
 
@@ -49,15 +50,15 @@ I hacked this together on my day off, but feel free to use this in any way you l
 ### Packaging and Running 
 
 *  `mvn package` to package up your jar into the target folder
-*  `sudo nohup java \
-    -Dzm.username=backup \
-    -Dzm.password=PASSWORD \
-    -Dzm.url=https://hostname.com/zm/ \
-    -Dcloud.aws.credentials.accessKey=ACCESS_KEY \
-    -Dcloud.aws.credentials.secretKey=SECRET_KEY \
-    -Dcloud.aws.s3.bucket=BUCKET_NAME \
-    -Dspring.datasource.username=ZM_USERNAME \
-    -Dspring.datasource.password=ZM_PASSWORD \
-    -Dserver.port=8081 \
-    -Devents.path=/home/zoneminder/ \
+*  `sudo nohup java
+    -Dzm.username=backup
+    -Dzm.password=PASSWORD
+    -Dzm.url=https://hostname.com/zm/
+    -Dcloud.aws.credentials.accessKey=ACCESS_KEY
+    -Dcloud.aws.credentials.secretKey=SECRET_KEY
+    -Dcloud.aws.s3.bucket=BUCKET_NAME
+    -Dspring.datasource.username=ZM_USERNAME
+    -Dspring.datasource.password=ZM_PASSWORD
+    -Dserver.port=8081
+    -Devents.path=/home/zoneminder/
     -jar s3-backup-0.0.1-SNAPSHOT.jar > /dev/null 2>&1&`
